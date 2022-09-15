@@ -5,6 +5,7 @@ import com.example.demo.model.Employee;
 import com.example.demo.model.Status;
 import com.example.demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public Employee create(@RequestBody Employee employee) {
         return employeeService.save(employee);
     }
@@ -41,11 +43,13 @@ public class EmployeeController {
     }
 
     @PatchMapping ("/employees/{id}/change/status")
+    @ResponseStatus(HttpStatus.CREATED)
     public Employee changeStatus(@RequestBody Employee employee, @PathVariable String id) {
          return employeeService.updateStatus(id, employee);
     }
 
     @PatchMapping ("/employees/{id}/change/department")
+    @ResponseStatus(HttpStatus.CREATED)
     public Employee changeDepartment(@RequestBody Employee employee, @PathVariable String id) {
         return employeeService.updateDepartment(id, employee);
     }

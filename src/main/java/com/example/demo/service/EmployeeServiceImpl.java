@@ -5,9 +5,12 @@ import com.example.demo.model.Employee;
 import com.example.demo.model.Status;
 import com.example.demo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
@@ -17,8 +20,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public Employee get(String id) {
-        Integer intId = Integer.parseInt(id);
-        return employeeRepository.findById(intId).get();
+        Optional<Employee> employee = employeeRepository.findById(Integer.parseInt(id));
+
+        return employee.orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe este empleado con ID "+ id));
     }
 
     @Override
@@ -29,16 +33,24 @@ public class EmployeeServiceImpl implements EmployeeService{
     @Override
     public Employee updateStatus(String id, Employee employee) {
         Employee storedEmployee = get(id);
-        storedEmployee.setStatus(employee.getStatus());
 
+        if (storedEmployee == null) {
+            throw new IllegalArgumentException("El empleado no existe");
+        } else {
+            storedEmployee.setStatus(employee.getStatus());
+        }
         return employeeRepository.save(storedEmployee);
     }
 
     @Override
     public Employee updateDepartment(String id, Employee employee) {
         Employee storedEmployee = get(id);
-        storedEmployee.setDepartment(employee.getDepartment());
-
+        //storedEmployee.setDepartment(employee.getDepartment());
+        if (employee.getDepartment() == null) {
+            throw new IllegalArgumentException("El departamento asignado no es correcto");
+        } else {
+            storedEmployee.setDepartment(employee.getDepartment());
+        }
         return employeeRepository.save(storedEmployee);
     }
 
